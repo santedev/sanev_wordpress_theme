@@ -52,8 +52,14 @@ p {
   font-family: var(--s-font);
 }	
 
+.dark-theme {
+  --primary: #260a6d;
+  --secondary: #efda74;
+  --main: #0a031a;
+}
+
 .container {
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
 }
 
@@ -197,6 +203,26 @@ p {
   justify-self: baseline;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
+.block {
+  display: block;
+}
+
+.inline {
+  display: inline;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
 .min-content {
   width: min-content;
 }
@@ -215,6 +241,22 @@ p {
 
 .bg-secondary {
   background: var(--secondary);
+}
+
+.white {
+  color: var(--white);
+}
+
+.bg-white {
+  background: var(--white);
+}
+
+.black {
+  color: var(--black);
+}
+
+.bg-black {
+  background: var(--black);
 }
 
 .center {
