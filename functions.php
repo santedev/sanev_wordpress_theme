@@ -77,8 +77,7 @@ function sanev_woocommerce_setup() {
 			'sanev_woocommerce_custom_background_args',
 			array(
 				'default-color' => 'ffffff',
-				'default-,
-				'default-
+				'default-image' => '',
 			)
 		)
 	);
@@ -141,17 +140,17 @@ add_action( 'widgets_init', 'sanev_woocommerce_widgets_init' );
 function sanev_woocommerce_scripts() {
 	wp_enqueue_style( 'sanev_woocommerce-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_enqueue_style( 'sanev_woocommerce_main', get_template_directory_uri() . '/css/main.css', _S_VERSION );
-	wp_enqueue_style( 'sanev_woocommerce_main', get_template_directory_uri() . '/css/style.css', _S_VERSION );
+	wp_enqueue_style( 'sanev_woocommerce_main_style', get_template_directory_uri() . '/css/style.css', _S_VERSION );
 	wp_style_add_data( 'sanev_woocommerce-style', 'rtl', 'replace' );
 
-	wp_enqueue_script( 'sanev_woocommerce-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
-	wp_enqueue_script( 'sanev_woocommerce_custom', get_template_directory_uri() . '/js/sanev.js', array(), _S_VERSION, true );
+	wp_enqueue_script( 'sanev_woocommerce_mobile_bar', get_template_directory_uri() . '/js/mobileBar.js', array(), _S_VERSION, true );
+	wp_enqueue_script( 'sanev_woocommerce_theme_toggler', get_template_directory_uri() . '/js/themeToggler.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
 }
-add_action( 'wp_enqueue_scripts', 'sanev_woocommerce_scripts' );
+add_action( 'wp_enqueue_scripts', 'sanev_woocommerce_scripts', 0);
 
 
 
@@ -202,3 +201,523 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 if ( class_exists( 'WooCommerce' ) ) {
 	require get_template_directory() . '/inc/woocommerce.php';
 }
+
+function remove_unwanted_sections($wp_customize) {
+    // Remove the "Colors" section
+    $wp_customize->remove_section('colors');
+}
+add_action('customize_register', 'remove_unwanted_sections');
+
+
+function sanev_customize_register ( $wp_customize ) {
+	$wp_customize->add_section('snv_colors', array(
+		'title' => __('Theme Colors', 'sanev'),
+		'priority' => 30,
+	));
+	$wp_customize->add_section('snv_dark_mode_colors', array(
+		'title' => __('Theme Dark Mode Colors', 'sanev_dark_mode'),
+		'priority' => 30,
+	));
+
+	$wp_customize->add_setting('snv_primary_color', array(
+		'default' => '#ffcdc9',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_bg_primary_color', array(
+		'default' => '#ffcdc9',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_primary_color_control', array(
+		'label' => __('Text primary color', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_primary_color',
+	)));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_bg_primary_color_control', array(
+		'label' => __('Background primary color', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_bg_primary_color',
+	)));
+
+	$wp_customize->add_setting('snv_secondary_color', array(
+		'default' => '#007bff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_bg_secondary_color', array(
+		'default' => '#007bff', 
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_secondary_color_control', array(
+		'label' => __('Text secondary color', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_secondary_color',
+	)));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_bg_secondary_color_control', array(
+		'label' => __('Background secondary color', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_bg_secondary_color',
+	)));
+
+	$wp_customize->add_setting('snv_black_color', array(
+		'default' => '#ffcdc8',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_bg_black_color', array(
+		'default' => '#ffcdc8',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_black_color_control', array(
+		'label' => __('Text black', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_black_color',
+	)));
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'snv_bg_black_color_control', array(
+		'label' => __('Background black', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_bg_black_color',
+	)));
+	
+	$wp_customize->add_setting('snv_white_color', array(
+		'default' => '#ffffff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_bg_white_color', array(
+    	'default' => '#ffffff',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_white_color_control', array(
+		'label' => __('Text White', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_white_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_bg_white_color_control', array(
+		'label' => __('Background White', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_bg_white_color',
+	)));
+
+	$wp_customize->add_setting('snv_muted_color', array(
+		'default' => '#999999',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_bg_muted_color', array(
+		'default' => '#f2f2f2',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_muted_color_control', array(
+		'label' => __('Text Muted', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_muted_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_bg_muted_color_control', array(
+		'label' => __('Background Muted', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_bg_muted_color',
+	)));
+
+
+
+	$wp_customize->add_setting('snv_var_primary_color', array(
+		'default' => '#f2f2f2',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_primary_color_dark', array(
+		'default' => '#ytuytu',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_primary_color_control', array(
+		'label' => __('Primary', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_primary_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_primary_color_control_dark', array(
+		'label' => __('Primary (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_primary_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_secondary_color', array(
+		'default' => '#262626',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_secondary_color_dark', array(
+    	'default' => '#262626',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_secondary_color_control', array(
+		'label' => __('Secondary', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_secondary_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_secondary_color_control_dark', array(
+		'label' => __('Secondary (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_secondary_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_accent_color', array(
+		'default' => '#f8ffb8',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_accent_color_dark', array(
+		'default' => '#f8ffb8',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_accent_color_control', array(
+		'label' => __('Accent', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_accent_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_accent_color_control_dark', array(
+		'label' => __('Accent (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_accent_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_main_color', array(
+		'default' => '#edecf5',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_main_color_dark', array(
+		'default' => '#edecf5',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_main_color_control', array(
+		'label' => __('Main', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_main_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_main_color_control_dark', array(
+		'label' => __('Main (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_main_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_light_bg_color', array(
+		'default' => '#1e3852',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_light_bg_color_dark', array(
+		'default' => '#1e3852',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_light_bg_color_control', array(
+		'label' => __('Light Background', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_light_bg_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_light_bg_color_control_dark', array(
+		'label' => __('Light Background (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_light_bg_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_dark_bg_color', array(
+		'default' => '#1e3852',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_dark_bg_color_dark', array(
+		'default' => '#1e3852',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_dark_bg_color_control', array(
+		'label' => __('Dark Background', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_dark_bg_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_dark_bg_color_control_dark', array(
+		'label' => __('Dark Background (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_dark_bg_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_menu_bg_color', array(
+		'default' => '#031629',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_menu_bg_color_dark', array(
+    	'default' => '#031629',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_menu_bg_color_control', array(
+		'label' => __('Menu Background', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_menu_bg_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_menu_bg_color_control_dark', array(
+		'label' => __('Menu Background (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_menu_bg_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_menu_text_color', array(
+		'default' => '#ffffff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_menu_text_color_dark', array(
+		'default' => '#ffffff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_menu_text_color_control', array(
+		'label' => __('Menu Text Color', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_menu_text_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_menu_text_color_control_dark', array(
+		'label' => __('Menu Text Color (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_menu_text_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_focus_color', array(
+		'default' => '#2d22ff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_focus_color_dark', array(
+		'default' => '#2d22ff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_focus_color_control', array(
+		'label' => __('Focus', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_focus_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_focus_color_control_dark', array(
+		'label' => __('Focus (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_focus_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_hover_color', array(
+		'default' => '#12197e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_hover_color_dark', array(
+		'default' => '#12197e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_hover_color_control', array(
+		'label' => __('Hover', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_hover_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_hover_color_control_dark', array(
+		'label' => __('Hover (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_hover_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_white_color', array(
+		'default' => '#ffffff',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_white_color_dark', array(
+    	'default' => '#ffffff',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_white_color_control', array(
+		'label' => __('White', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_white_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_white_color_control_dark', array(
+		'label' => __('White (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_white_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_muted_color', array(
+		'default' => '#ababab',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_muted_color_dark', array(
+    	'default' => '#ababab',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_muted_color_control', array(
+		'label' => __('Muted', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_muted_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_muted_color_control_dark', array(
+		'label' => __('Muted (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_muted_color_dark',
+	)));
+	
+	$wp_customize->add_setting('snv_var_black_color', array(
+		'default' => '#05050b',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_black_color_dark', array(
+    	'default' => '#05050b',
+    	'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_black_color_control', array(
+		'label' => __('Black', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_black_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_black_color_control_dark', array(
+		'label' => __('Black (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_black_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_warning_color', array(
+    'default' => '#e1ce3f',
+    'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_warning_color_dark', array(
+		'default' => '#e1ce3f',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_warning_color_control', array(
+		'label' => __('Warning', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_warning_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_warning_color_control_dark', array(
+		'label' => __('Warning (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_warning_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_info_color', array(
+		'default' => '#24669f',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_info_color_dark', array(
+		'default' => '#24669f',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_info_color_control', array(
+		'label' => __('Info', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_info_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_info_color_control_dark', array(
+		'label' => __('Info (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_info_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_success_color', array(
+		'default' => '#11671e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_success_color_dark', array(
+		'default' => '#11671e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_success_color_control', array(
+		'label' => __('Success', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_success_color',
+	)));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_success_color_control_dark', array(
+		'label' => __('Success (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_success_color_dark',
+	)));
+
+	$wp_customize->add_setting('snv_var_alert_color', array(
+		'default' => '#c70e0e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_setting('snv_var_alert_color_dark', array(
+		'default' => '#c70e0e',
+		'transport' => 'refresh',
+	));
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_alert_color_control', array(
+		'label' => __('Alert', 'sanev'),
+		'section' => 'snv_colors',
+		'settings' => 'snv_var_alert_color',
+	)));
+
+	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'snv_var_alert_color_control_dark', array(
+		'label' => __('Alert (Dark Mode)', 'sanev_dark_mode'),
+		'section' => 'snv_dark_mode_colors',
+		'settings' => 'snv_var_alert_color_dark',
+	)));	
+}
+
+add_action('customize_register', 'sanev_customize_register');
+
+function sanev_customize_css() { ?>
+	<style type="text/css">
+		:root {
+			--primary: <?php echo get_theme_mod('snv_var_primary_color', '#f2f2f2'); ?>;
+			--secondary: <?php echo get_theme_mod('snv_var_secondary_color', '#f2f2f2'); ?>;
+			--accent: <?php echo get_theme_mod('snv_var_accent_color', '#f2f2f2'); ?>;
+			--main: <?php echo get_theme_mod('snv_var_main_color', '#f2f2f2'); ?>;
+			--light-bg: <?php echo get_theme_mod('snv_var_light_bg_color', '#f2f2f2'); ?>;
+			--dark-bg: <?php echo get_theme_mod('snv_var_dark_bg_color', '#f2f2f2'); ?>;
+			--menu-bg: <?php echo get_theme_mod('snv_var_menu_bg_color', '#f2f2f2'); ?>;
+			--menu-text-color: <?php echo get_theme_mod('snv_var_menu_text_color', '#f2f2f2'); ?>;
+			--focus: <?php echo get_theme_mod('snv_var_focus_color', '#f2f2f2'); ?>;
+			--hover: <?php echo get_theme_mod('snv_var_hover_color', '#f2f2f2'); ?>;
+			--white: <?php echo get_theme_mod('snv_var_white_color', '#f2f2f2'); ?>;
+			--muted: <?php echo get_theme_mod('snv_var_muted_color', '#f2f2f2'); ?>;
+			--black: <?php echo get_theme_mod('snv_var_black_color', '#f2f2f2'); ?>;
+			--success: <?php echo get_theme_mod('snv_var_success_color', '#f2f2f2'); ?>;
+			--warning: <?php echo get_theme_mod('snv_var_warning_color', '#f2f2f2'); ?>;
+			--alert: <?php echo get_theme_mod('snv_var_alert_color', '#f2f2f2'); ?>;
+			--info: <?php echo get_theme_mod('snv_var_info_color', '#f2f2f2'); ?>;
+		}
+
+		.dark-mode {
+			--primary: <?php echo get_theme_mod('snv_var_primary_color_dark', '#f2f2f2'); ?>;
+			--secondary: <?php echo get_theme_mod('snv_var_secondary_color_dark', '#f2f2f2'); ?>;
+			--accent: <?php echo get_theme_mod('snv_var_accent_color_dark', '#f2f2f2'); ?>;
+			--main: <?php echo get_theme_mod('snv_var_main_color_dark', '#f2f2f2'); ?>;
+			--light-bg: <?php echo get_theme_mod('snv_var_light_bg_color_dark', '#f2f2f2'); ?>;
+			--dark-bg: <?php echo get_theme_mod('snv_var_dark_bg_color_dark', '#f2f2f2'); ?>;
+			--menu-bg: <?php echo get_theme_mod('snv_var_menu_bg_color_dark', '#f2f2f2'); ?>;
+			--menu-text-color: <?php echo get_theme_mod('snv_var_menu_text_color_dark', '#f2f2f2'); ?>;
+			--focus: <?php echo get_theme_mod('snv_var_focus_color_dark', '#f2f2f2'); ?>;
+			--hover: <?php echo get_theme_mod('snv_var_hover_color_dark', '#f2f2f2'); ?>;
+			--white: <?php echo get_theme_mod('snv_var_white_color_dark', '#f2f2f2'); ?>;
+			--muted: <?php echo get_theme_mod('snv_var_muted_color_dark', '#f2f2f2'); ?>;
+			--black: <?php echo get_theme_mod('snv_var_black_color_dark', '#f2f2f2'); ?>;
+			--success: <?php echo get_theme_mod('snv_var_success_color_dark', '#f2f2f2'); ?>;
+			--warning: <?php echo get_theme_mod('snv_var_warning_color_dark', '#f2f2f2'); ?>;
+			--alert: <?php echo get_theme_mod('snv_var_alert_color_dark', '#f2f2f2'); ?>;
+			--info: <?php echo get_theme_mod('snv_var_info_color_dark', '#f2f2f2'); ?>;
+		}
+
+		.bg-primary {
+			background: <?php echo get_theme_mod( 'snv_bg_primary_color' ); ?>;
+		}
+		.primary {
+			color: <?php echo get_theme_mod( 'snv_primary_color' ); ?>;
+		}
+		.bg-secondary {
+			background: <?php echo get_theme_mod( 'snv_bg_secondary_color' ); ?>;
+		}
+		.secondary {
+			color: <?php echo get_theme_mod( 'snv_secondary_color' ); ?>;
+		}
+		.bg-black {
+			background: <?php echo get_theme_mod( 'snv_bg_black_color' ); ?>;
+		}
+		.black {
+			color: <?php echo get_theme_mod( 'snv_black_color' ); ?>;
+		}
+		.bg-white {
+			background: <?php echo get_theme_mod( 'snv_bg_white_color' ); ?>;
+		}
+		.white {
+			color: <?php echo get_theme_mod( 'snv_white_color' ); ?>;
+		}
+		.bg-muted {
+			background: <?php echo get_theme_mod( 'snv_bg_muted_color' ); ?>;
+		}
+		.muted {
+			color: <?php echo get_theme_mod( 'snv_muted_color' ); ?>;
+		}
+	</style>
+<?php }
+
+/*
+add_action('wp_head', 'sanev_customize_css');
+*/

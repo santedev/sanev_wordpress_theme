@@ -16,6 +16,7 @@
  *
  * @uses sanev_woocommerce_header_style()
  */
+
 function sanev_woocommerce_custom_header_setup() {
 	add_theme_support(
 		'custom-header',

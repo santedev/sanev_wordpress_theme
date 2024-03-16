@@ -16,7 +16,6 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-
 	<?php wp_head(); ?>
 </head>
 
@@ -34,10 +33,6 @@
 			</div>
 			<div>
 				<nav id="site-navigation" class="main-navigation pr-4">
-					<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"> 
-						<span></span>
-						<span></span>
-					</button>
 					<?php
 					wp_nav_menu(
 						array(
@@ -50,3 +45,8 @@
 			</div>
 		</div>
 	</header><!-- #masthead -->
+	<button 
+	id="theme-toggler" 
+	class="cursor-pointer bg-secondary white" 
+	aria-pressed="false"
+	>theme toggler</button>

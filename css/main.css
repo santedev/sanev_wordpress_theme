@@ -1,24 +1,20 @@
 @import "./style.css";
 
-.menu-toggle {
-  background: transparent;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  padding: 0;
+#mobile-icons {
+  display: none;
 }
 
-.menu-toggle span {
-  background: var(--black);
-  display: block;
-  height: 2px;
-  margin-bottom: 8px;
-  width: 20px;
+.icon {
+  width: calc(var(--def-space) * 1.75);
 }
 
 .custom-logo {
   width: clamp(40px, 10vw, 55px);
   aspect-ratio: 648/413;
+}
+
+.main-navigation {
+  display: block;
 }
 
 .main-navigation ul {
@@ -39,28 +35,67 @@
 
 .main-navigation ul a:hover,
 .main-navigation ul a:focus,
-.main-navigation ul a:active,
-.menu-toggle span {
+.main-navigation ul a:active {
   color: var(--hover);
 }
 
-.toggled button::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+#menu-toggle {
+  display: flex;
 }
 
-.toggled div {
+.main-navigation ul {
+  display: flex;
+}
+
+@media (max-width: 580px) {
+  .main-navigation ul {
+    display: flex;
+    position: fixed;
+    justify-content: space-evenly;
+    background-color: var(--menu-bg);
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    padding-top: 10px;
+    padding-bottom: 6px;
+    z-index: 999;
+  }
+
+  .main-navigation ul a {
+    display: flex;
+    flex-direction: column; 
+    padding: 0;
+    margin: 0;
+  }
+
+  .main-navigation ul a span {
+    display: inline;
+    color: var(--menu-text-color);
+    text-align: center;
+    font-size: calc(var(--def-space) * 0.6);
+  }
+
+  ul,
+  ol {
+    margin: 0;
+  }
+
+  #mobile-icons {
+    display: inline;
+    margin-inline: auto;
+    width: clamp(15px, 5vw, 25px);
+    padding: 0;
+    margin-bottom: calc(var(--def-space) * 0.25);
+    aspect-ratio: 1/1;
+  }
+}
+/* .toggled div {
   position: relative;
   gap: 0.5rem;
-}
+} */
 
-.toggled div ul {
+/* .toggled div ul {
   position: absolute;
   top: 100%;
   width: 100%;
@@ -68,21 +103,21 @@
   border-radius: 0.5rem;
   z-index: 2;
   color: var(--white);
-}
+} */
+
 .toggled div ul li a {
-  color: var(--white);
+  color: var(--menu-text-color);
 }
 
 .toggled div ul li a:hover,
 .toggled div ul li a:focus,
 .toggled div ul li a:active,
 .toggled div ul li a:visited {
-  color: var(--white);
+  color: var(--menu-text-color);
 }
 
-
-.toggled button span {
+.toggled button svg {
   position: relative;
-  background: var(--white);
+  display: flex;
   z-index: 9999;
 }
